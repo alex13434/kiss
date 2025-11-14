@@ -1,0 +1,34 @@
+services:
+  bot:
+    build: .
+    container_name: kiss
+    restart: always
+    depends_on:
+      - mongodb
+      - redis
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb-kiss
+    restart: always
+    ports:
+      - '127.0.0.1:27021:27017'
+    volumes:
+      - mongodb_data:/data/db
+    mem_limit: 512m
+    command: ['mongod', '--wiredTigerCacheSizeGB=0.256']
+
+  redis:
+    image: redis:alpine
+    container_name: redis-kiss
+    restart: always
+    ports:
+      - '127.0.0.1:6383:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:

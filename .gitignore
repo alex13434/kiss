@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+logs/*.log
+
+# Environment variables
+.env*
+/temp
+
+
+# Build output
+build/
+out/
+dist/
+
+# Dependency directories
+bower_components/
+jspm_packages/
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.sublime-workspace
+*.sublime-project
+
+# OS
+dump/
+backup/

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "preserveWatchOutput": true,
+    "allowJs": true,
+    "strictNullChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false,
+    "experimentalDecorators": true,
+    "module": "CommonJS",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
