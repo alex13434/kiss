@@ -66,21 +66,25 @@ export const sendTasks = async (ctx: MyContext) => {
     const tasks = unsubscribedTasks;
 
     if (tasks.length !== 0) {
-      const message = await EditOrSend(ctx, subText, {
-        reply_markup: tasksKeyboard(tasks, leastUsedProvider),
-      });
-      const activeTask: IActiveTask = {
-        user_id: ctx.from.id,
-        //@ts-ignore
-        message_id: message.message_id,
-        provider: leastUsedProvider,
-        subCount: tasks.length,
-        sentAt: new Date(),
-      };
-      await redis.hset(
-        `activeTasks:${ctx.from.id}:${leastUsedProvider}`,
-        activeTask
-      );
+      try {
+        const message = await EditOrSend(ctx, subText, {
+          reply_markup: tasksKeyboard(tasks, leastUsedProvider),
+        });
+        const activeTask: IActiveTask = {
+          user_id: ctx.from.id,
+          //@ts-ignore
+          message_id: message.message_id,
+          provider: leastUsedProvider,
+          subCount: tasks.length,
+          sentAt: new Date(),
+        };
+        await redis.hset(
+          `activeTasks:${ctx.from.id}:${leastUsedProvider}`,
+          activeTask
+        );
+      } catch (error) {
+        console.log(error);
+      }
       return 'incompleted';
     }
     await setUsedProvider(leastUsedProvider, ctx.from.id);
