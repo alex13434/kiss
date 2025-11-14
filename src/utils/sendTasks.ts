@@ -111,6 +111,7 @@ export const tasksKeyboard = (tasks: any[], provider: string) => {
             ? '🤖 Запустить'
             : '🔗 Перейти';
     } else if (provider === 'flyer') {
+      console.log('FLYER_TASKS', tasks);
       text =
         tasks[i].task === 'subscribe channel'
           ? '📢 Подписаться'
