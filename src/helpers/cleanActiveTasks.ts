@@ -1,10 +1,8 @@
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
 import { redis } from '../bot';
 import { IActiveTask } from '../utils/sendTasks';
-import { ACTIVETASKSTIME, FREEGAMECOOLDOWN, main_kb } from '../common';
+import { ACTIVETASKSTIME } from '../common';
 import { Api } from 'grammy';
-import { mainText } from '../texts';
-import { User } from '../models/user';
 
 const scheduler = new ToadScheduler();
 
@@ -24,18 +22,7 @@ export async function cleanActiveTasks(api: Api) {
 
         if (elapsedSeconds >= ACTIVETASKSTIME) {
           try {
-            const { balance } = await User.findOne({
-              telegram_id: task.user_id,
-            }).select('balance');
-            await api.editMessageText(
-              task.user_id,
-              task.message_id,
-              mainText(balance),
-              {
-                reply_markup: main_kb(),
-                link_preview_options: { is_disabled: true },
-              }
-            );
+            await api.deleteMessage(task.user_id, task.message_id);
           } catch (error) {}
           await redis.del(taskKey);
         }

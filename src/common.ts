@@ -13,6 +13,7 @@ export const WINVALUES = [4, 5];
 export const DICE = '🏀';
 export const GROUPCOMMAND = 'basket';
 
+// generations : cost
 export const items: Record<number, number[]> = {
   0: [1, 5],
   1: [10, 40],
@@ -36,7 +37,7 @@ export const getGenEnding = (days: number) => {
 export const donate_kb = (user_id: number) => {
   const keyboard = new InlineKeyboard();
 
-  Object.entries(items).forEach(([key, [cost, gens]], index) => {
+  Object.entries(items).forEach(([key, [gens, cost]], index) => {
     const text = `🔥 ${gens} ${getGenEnding(gens)} - ${cost} ⭐️`;
 
     keyboard.text(text, `buy_gens_${key}`).row();
@@ -50,79 +51,27 @@ export const donate_kb = (user_id: number) => {
   return keyboard;
 };
 
-export const pCommands = [{ command: '/start', description: '😘 Целоваться' }];
-
-export const getDiceEnding = (days: number) => {
-  if (days % 10 === 1 && days % 100 !== 11) {
-    return 'мяч';
-  } else if (
-    [2, 3, 4].includes(days % 10) &&
-    ![12, 13, 14].includes(days % 100)
-  ) {
-    return 'мяча';
-  } else {
-    return 'мячей';
-  }
-};
+export const pCommands = [
+  { command: '/start', description: '😘 Создать поцелуй' },
+  { command: '/bonus', description: '🔥 Генерации за друзей' },
+];
 
 export const acceptRulesKB = new InlineKeyboard().text(
   'все понятно 👍',
   'accept_rules'
 );
 
-export const main_kb = () => {
-  const keyboard = new InlineKeyboard();
-
-  Object.entries(items).forEach(([key, [cost, balls]], index) => {
-    const isFree = cost === 0;
-    const emoji = isFree ? '🔥🏀' : key === `${PREMINDEX}` ? '💎🏀' : '🏀';
-    const text = isFree
-      ? `${emoji} ${balls} мячей • бесплатно`
-      : `${emoji} ${balls} ${getDiceEnding(balls)} • ${cost} ⭐️`;
-    const callback = `game_${key}`;
-
-    if (index % 2 !== 0) {
-      keyboard.text(text, callback);
-      if (index == 0 || index == 5) {
-        keyboard.row();
-      }
-    } else {
-      keyboard.text(text, callback).row();
-    }
-  });
-
-  // Add friends menu button
-  keyboard.text(`+${FRIENDREWARD} ⭐️ за друга`, 'friends_menu');
-  keyboard.url(`⚽️ футбол`, 'https://t.me/foot_gift_bot?start=basket');
-
-  return keyboard;
-};
-
 export const invite_menu_kb = (user_id: number) =>
   new InlineKeyboard()
     .url(
-      '➡️ отправить другу',
+      '➡️ Отправить другу',
       `https://t.me/share/url?url=https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
     )
     .row()
     .copyText(
-      'скопировать ссылку',
+      '🔗 Скопировать ссылку',
       `https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
     );
-
-export const invite_kb = (user_id: number) =>
-  new InlineKeyboard()
-    .url(
-      '➡️ отправить другу',
-      `https://t.me/share/url?url=https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
-    )
-    .row()
-    .copyText(
-      'скопировать ссылку',
-      `https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
-    )
-    .row()
-    .text('« назад', `back_menu`);
 
 export const addToChatKeyboard = new InlineKeyboard().url(
   '⊕ сыграть в чате',

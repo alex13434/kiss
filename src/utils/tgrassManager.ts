@@ -44,7 +44,6 @@ export const checkTgrassSubscribes = async (ctx: MyContext) => {
         Auth: config.TGRASS_KEY,
       },
     });
-    console.log(data);
 
     let isSubscribed = true;
     const tasks = data.offers || [];

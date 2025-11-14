@@ -2,8 +2,9 @@ import { MyContext } from '../typings/context';
 import { InputFile } from 'grammy';
 import { NanoBananaAPI } from '../utils/NanoBananaAPI';
 import { User } from '../models/user';
-import { checkTasks } from '../helpers/checkTasks';
-import { donate_kb } from '../common';
+import { checkTasks, giveFriendReward } from '../helpers/checkTasks';
+import { donate_kb, getGenEnding, items } from '../common';
+import { delay } from '../admin/mailing';
 
 export const albumStorage = new Map<
   string,
@@ -13,7 +14,7 @@ const ALBUM_TIMEOUT = 3000;
 const REQUIRED_PHOTOS = 2;
 
 // Инициализация API
-const nanoAPI = new NanoBananaAPI('09f7c9fc49fcfaed1b7950557af5e6da'); // Замени на свой
+export const nanoAPI = new NanoBananaAPI('09f7c9fc49fcfaed1b7950557af5e6da'); // Замени на свой
 
 export const mediaHandler = async (ctx: MyContext) => {
   const message = ctx.message;
@@ -25,18 +26,18 @@ export const mediaHandler = async (ctx: MyContext) => {
   // Только альбомы (2 фото в одном сообщении)
   if (!mediaGroupId) {
     await ctx.reply(
-      'Пожалуйста, отправьте <b>2 фото в одном сообщении</b>, чтобы я сделал поцелуй 💋'
+      '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋'
     );
     return;
   }
 
-  let entry = albumStorage.get(mediaGroupId);
+  let entry = albumStorage.get(String(ctx.from.id));
 
   // Первое фото в альбоме
   if (!entry) {
     const timeout = setTimeout(() => cleanupAlbum(mediaGroupId), ALBUM_TIMEOUT);
     entry = { photos: [], timeout };
-    albumStorage.set(mediaGroupId, entry);
+    albumStorage.set(String(ctx.from.id), entry);
   } else {
     // Сброс таймаута
     clearTimeout(entry.timeout);
@@ -57,23 +58,7 @@ export const mediaHandler = async (ctx: MyContext) => {
     });
     const result = await checkTasks(ctx);
     if (result == 'completed' || result == 'no_tasks') {
-      if (generations >= 1) {
-        processKissAlbum(mediaGroupId, ctx).then(async () => {
-          await User.updateOne(
-            { telegram_id: ctx.from.id },
-            { $inc: { usedGenCount: 1 } },
-            { $inc: { generations: -1 } }
-          );
-        });
-      } else {
-        await ctx.api.sendMessage(
-          ctx.chat.id,
-          `На вашем балансе ${generations} генераций. Пополните баланс, чтобы продолжить.
-  
-  💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.`,
-          { reply_markup: donate_kb(ctx.from.id) }
-        );
-      }
+      processKissAlbum(ctx);
     }
   }
 
@@ -84,39 +69,47 @@ export const mediaHandler = async (ctx: MyContext) => {
 };
 
 // Очистка, если пользователь не отправил второе фото
-function cleanupAlbum(mediaGroupId: string) {
-  if (albumStorage.has(mediaGroupId)) {
-    albumStorage.delete(mediaGroupId);
+function cleanupAlbum(user_id: string) {
+  if (albumStorage.has(user_id)) {
+    albumStorage.delete(user_id);
   }
 }
 
-// Основная логика: делаем поцелуй
-async function processKissAlbum(mediaGroupId: string, ctx: MyContext) {
-  const entry = albumStorage.get(mediaGroupId);
-  if (!entry || entry.photos.length < 2) {
-    cleanupAlbum(mediaGroupId);
-    return;
-  }
+// actions/mediaHandler.ts
+
+import { redis } from '../bot';
+
+export async function processKissAlbum(ctx: MyContext) {
+  const userId = ctx.from.id;
+  const entry = albumStorage.get(String(userId));
+  if (!entry || entry.photos.length < 2) return cleanupAlbum(String(userId));
 
   const photos = entry.photos;
-  cleanupAlbum(mediaGroupId);
+  cleanupAlbum(String(userId));
 
-  const statusMsg = await ctx.reply(
-    '💋 <b>Делаю поцелуй...</b> Это займёт ~30–60 секунд',
-    {
-      reply_to_message_id: photos[0].message_id,
-    }
+  const user = await User.findOne({ telegram_id: userId });
+  if (user.generations < 1) {
+    return ctx.reply(`На балансе ${user.generations} генераций...`, {
+      reply_markup: donate_kb(userId),
+    });
+  }
+
+  await User.updateOne(
+    { telegram_id: userId },
+    { $inc: { usedGenCount: 1, generations: -1 } }
+  );
+
+  const file1 = await ctx.api.getFile(photos[0].file_id);
+  const file2 = await ctx.api.getFile(photos[1].file_id);
+  const photoUrl1 = `https://api.telegram.org/file/bot${ctx.api.token}/${file1.file_path}`;
+  const photoUrl2 = `https://api.telegram.org/file/bot${ctx.api.token}/${file2.file_path}`;
+
+  await ctx.reply(
+    '💋 <b>Делаю поцелуй...</b>\n\n<blockquote>⏰ Это займёт ~30-60 секунд</blockquote>',
+    { reply_to_message_id: photos[0].message_id }
   );
 
   try {
-    // 1. Получаем file_path из Telegram
-    const file1 = await ctx.api.getFile(photos[0].file_id);
-    const file2 = await ctx.api.getFile(photos[1].file_id);
-
-    const photoUrl1 = `https://api.telegram.org/file/bot${ctx.api.token}/${file1.file_path}`;
-    const photoUrl2 = `https://api.telegram.org/file/bot${ctx.api.token}/${file2.file_path}`;
-
-    // 2. Отправляем в NanoBanana API
     const taskId = await nanoAPI.generateImage('make these people kiss', {
       type: 'TEXTTOIAMGE',
       numImages: 1,
@@ -124,28 +117,69 @@ async function processKissAlbum(mediaGroupId: string, ctx: MyContext) {
       watermark: false,
     });
 
-    // 3. Ждём результат
-    await ctx.reply('Генерация началась... Ожидайте.', {
-      reply_to_message_id: statusMsg.message_id,
-    });
-    const result = await nanoAPI.waitForCompletion(taskId);
+    // СОХРАНЯЕМ ЗАДАЧУ В REDIS
+    const task = {
+      taskId,
+      userId,
+      chatId: ctx.chat.id,
+      messageId: photos[0].message_id,
+      photoUrls: [photoUrl1, photoUrl2],
+      createdAt: Date.now(),
+      status: 'pending' as const,
+    };
 
-    // 4. Отправляем готовое изображение
-    //@ts-ignore
-    await ctx.replyWithPhoto(new InputFile({ url: result }), {
-      caption: 'Поцелуй готов!',
-      reply_to_message_id: photos[0].message_id,
-    });
-
-    await ctx.api
-      .deleteMessage(ctx.chat!.id, statusMsg.message_id)
-      .catch(() => {});
+    await redis.set(`kiss:task:${taskId}`, JSON.stringify(task), 'EX', 3600);
+    await redis.sadd('kiss:active_tasks', taskId); // множество активных
   } catch (error) {
-    const errMsg =
-      error instanceof Error ? error.message : 'Неизвестная ошибка';
-    await ctx.reply(`Ошибка: ${errMsg}`, {
+    //@ts-ignore
+    await ctx.reply(`Ошибка запуска: ${error.message}`, {
       reply_to_message_id: photos[0].message_id,
     });
-    console.error('Kiss generation error:', error);
   }
 }
+
+export const preCheckoutQueryHandler = async (ctx: MyContext) => {
+  await ctx.answerPreCheckoutQuery(true);
+};
+
+export const successfulPaymentHandler = async (ctx: MyContext) => {
+  const genIndex = Number(
+    ctx.message.successful_payment.invoice_payload.split('genIndex_')[1]
+  );
+  const { generations } = await User.findOneAndUpdate(
+    { telegram_id: ctx.from.id },
+    { $inc: { generations: items[genIndex][0] } }
+  );
+  await ctx.api.sendMessage(
+    ctx.chat.id,
+    `<b>Успешно 🎉</b>
+
+<b>+${items[genIndex][0]} ${getGenEnding(items[genIndex][0])}</b> 🔥 
+
+У вас сейчас <b>${generations + items[genIndex][0]} ${getGenEnding(generations + items[genIndex][0])}</b> на балансе!`
+  );
+};
+
+export const buyGensCQ = async (ctx: MyContext) => {
+  const genIndex = Number(ctx.callbackQuery.data.split('buy_gens_')[1]);
+  await ctx.api.sendInvoice(
+    ctx.chat.id,
+    `Покупка генераций`,
+    `+${items[genIndex][0]} ${getGenEnding(items[genIndex][0])} 🔥 на баланс`,
+    `genIndex_${genIndex}`,
+    'XTR',
+    [
+      {
+        label: `${items[genIndex][0]} ${getGenEnding(items[genIndex][0])} 🔥`,
+        amount: items[genIndex][1],
+      },
+    ],
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: `Купить за ⭐ ${items[genIndex][1]}`, pay: true }],
+        ],
+      },
+    }
+  );
+};

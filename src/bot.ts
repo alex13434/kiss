@@ -30,13 +30,7 @@ import {
   refMenuCQ,
 } from './admin/refMenu';
 import { refGroup } from './middlewares/refGroup';
-import { friendsMenu, friendsMenuCQ } from './actions/friends';
-import {
-  backMenuCQ,
-  gameCQ,
-  preCheckoutQueryHandler,
-  successfulPaymentHandler,
-} from './actions/game';
+import { bonusMenu } from './actions/bonus';
 import { checkButtonCQ } from './utils/taskManager';
 import { startHandler } from './actions/startHandler';
 import { addToChat } from './actions/addToChat';
@@ -48,14 +42,19 @@ import {
   deleteResourceConv,
   viewResourceConv,
 } from './admin/resources';
-import { testFunc } from './actions/testFunc';
-import { GROUPCOMMAND, main_kb, pCommands } from './common';
+import { pCommands } from './common';
 import { refUser } from './middlewares/refUser';
 import { groupStartText, mainText } from './texts';
 import { IUser, User } from './models/user';
 import { logError } from './utils/logger';
 import { checkRef } from './admin/checkRef';
-import { mediaHandler } from './actions/mediaHandler';
+import {
+  buyGensCQ,
+  mediaHandler,
+  preCheckoutQueryHandler,
+  successfulPaymentHandler,
+} from './actions/mediaHandler';
+import { startKissPollingWorker } from './utils/kissWorker';
 
 export const ADMIN_ID = 7371046616;
 
@@ -111,16 +110,14 @@ pBot.use(createConversation(viewResourceConv, { parallel: true }));
 pBot.use(createConversation(deleteResourceConv, { parallel: true }));
 
 pBot.use(refUser);
+
+pBot.callbackQuery(/^buy_gens_/, buyGensCQ);
 pBot.command('start', startHandler);
+pBot.command('bonus', bonusMenu);
 pBot.on(':media', mediaHandler);
-
-pBot.callbackQuery('accept_rules', backMenuCQ);
-
-pBot.callbackQuery(/^game_/, gameCQ);
-pBot.callbackQuery('friends_menu', friendsMenuCQ);
-pBot.callbackQuery('back_menu', backMenuCQ);
-pBot.callbackQuery(/^check_subs_/, checkButtonCQ);
 pBot.on(':successful_payment', successfulPaymentHandler);
+
+pBot.callbackQuery(/^check_subs_/, checkButtonCQ);
 
 // pBot.command('test', testFunc);
 
@@ -166,10 +163,7 @@ pBot.callbackQuery('resume_mailing', resumeMailingCQ);
 
 pBot.on('message', async ctx => {
   const user = await User.findOne({ telegram_id: ctx.from.id });
-  ctx.reply(mainText(user.balance), {
-    reply_markup: main_kb(),
-    link_preview_options: { is_disabled: true },
-  });
+  ctx.reply(mainText);
 });
 
 const gBot = bot.chatType(['supergroup', 'group']);
@@ -184,7 +178,9 @@ async function startBot() {
   try {
     await initializeMailing();
     run(bot);
+    startKissPollingWorker();
     cleanActiveTasks(bot.api);
+
     bot.catch(async err => {
       logError(err.error, err.ctx);
     });

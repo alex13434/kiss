@@ -1,14 +1,13 @@
 import { MyContext } from '../typings/context';
 import { InlineKeyboard } from 'grammy';
 import { mainText, subText } from '../texts';
-import { startGame } from '../actions/game';
 import { checkSubGramSubscribes, getSubGramTasks } from './subGramManager';
 import { checkFlyerSubscribes, getFlyerTasks } from './flyerManager';
 import { redis } from '../bot';
 import { User } from '../models/user';
 import { IActiveTask, tasksKeyboard } from './sendTasks';
-import { FREEGAMECOOLDOWN, main_kb } from '../common';
 import { checkTgrassSubscribes, getTgrassTasks } from './tgrassManager';
+import { processKissAlbum } from '../actions/mediaHandler';
 
 export const checkSubscribes = async (ctx: MyContext, provider: string) => {
   let tasks;
@@ -73,12 +72,10 @@ export const checkButtonCQ = async (ctx: MyContext) => {
       try {
         await ctx.answerCallbackQuery('😐 не все задания выполнены =(');
       } catch (error) {
-        const { balance } = await User.findOne({
-          telegram_id: ctx.from.id,
-        }).select('balance');
-        await ctx.api.sendMessage(ctx.chat.id, mainText(balance), {
-          reply_markup: main_kb(),
-        });
+        await ctx.api.sendMessage(
+          ctx.chat.id,
+          '<b>Что-то пошло не так!</b> отправьте /start чтобы бот снова заработал'
+        );
       }
       return;
     }
@@ -105,6 +102,7 @@ export const checkButtonCQ = async (ctx: MyContext) => {
     try {
       await ctx.deleteMessage();
     } catch (error) {}
+    await processKissAlbum(ctx);
   }
 };
 

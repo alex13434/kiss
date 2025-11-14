@@ -1,11 +1,4 @@
-import {
-  DICE,
-  FRIENDREWARD,
-  GAMESREWARD,
-  getDiceEnding,
-  items,
-  WINVALUES,
-} from './common';
+import { DICE, FRIENDREWARD, GAMESREWARD, items, WINVALUES } from './common';
 import { IUser } from './models/user';
 import config from './typings/config';
 
@@ -63,23 +56,10 @@ const getSecondsEnding = (hours: number) => {
   }
 };
 
-export const timeLeftText = (ttl: number) => {
-  const minutes = Math.ceil(ttl / 60) - 1;
-  const seconds = ttl % 60;
-  return `🏀 до следующего бесплатного броска осталось ${minutes} ${getMinutesEnding(minutes)} ${seconds} ${getSecondsEnding(seconds)}`;
-};
+export const mainText =
+  '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋';
 
-export const mainText = (balance: number) => {
-  return `🏀 <b>баскет за подарки</b>
-
-<i>попади мячом в <b>кольцо</b> каждым
-броском и получи <b>крутой подарок</b></i> 🎁
-<blockquote><b><a href="https://t.me/${config.BOT_USERNAME}?start=rules">подробнее</a></b></blockquote>
-
-💰 баланс: <b>${balance}</b> ⭐️`;
-};
-
-export const friendsText = `<b>🫂 друзья</b>\n\n<blockquote>получай <b>+${FRIENDREWARD} ⭐️</b> на баланс\nза каждого приглашённого человека в бота!</blockquote>`;
+export const friendsText = `<b>🔥 Бесплатные генерации</b>\n\n<blockquote>💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.</blockquote>`;
 
 export const retryGameText = `🟡 <i>в этот раз не вышло,
 сыграем еще раз?</i>`;
@@ -124,12 +104,6 @@ const loseResultText = '<i><b>❌ промах</b></i>';
 
 export const resultPlayText = (i: number, value: number) =>
   `${WINVALUES.includes(value) ? winResultText : loseResultText}\n`;
-
-export const resultsHeaderText = (playsCount: number) =>
-  `<b>результаты игры <i>*${DICE} ${playsCount} ${getDiceEnding(playsCount)}*</i></b>\n\n`;
-
-export const gameNameText = (index: number) =>
-  `🏀 баскет ${items[index][1]} ${getDiceEnding(items[index][1])}`;
 
 export const rewardForFriendText = `<blockquote>🎉 вы получили <b>вознаграждение ⭐️ ${FRIENDREWARD}</b> за приглашение друга!</blockquote>`;
 
