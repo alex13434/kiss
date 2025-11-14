@@ -4,7 +4,8 @@ import { NanoBananaAPI } from '../utils/NanoBananaAPI';
 import { User } from '../models/user';
 import { checkTasks, giveFriendReward } from '../helpers/checkTasks';
 import { donate_kb, getGenEnding, items } from '../common';
-import { delay } from '../admin/mailing';
+import { redis } from '../bot';
+import { mainText } from '../texts';
 
 export const albumStorage = new Map<
   string,
@@ -72,11 +73,6 @@ function cleanupAlbum(user_id: string) {
     albumStorage.delete(user_id);
   }
 }
-
-// actions/mediaHandler.ts
-
-import { redis } from '../bot';
-import { mainText } from '../texts';
 
 export async function processKissAlbum(ctx: MyContext) {
   const userId = ctx.from.id;

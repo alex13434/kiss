@@ -1,3 +1,4 @@
+import { Api } from 'grammy';
 import { redis } from '../bot';
 import { FREEGAMECOOLDOWN, FRIENDREWARD, GAMESREWARD } from '../common';
 import { IUser, User } from '../models/user';
@@ -10,7 +11,7 @@ export const checkTasks = async (ctx: MyContext) => {
   return result;
 };
 
-export const giveFriendReward = async (ctx: MyContext, user: IUser) => {
+export const giveFriendReward = async (api: Api, user: IUser) => {
   const inviterId = Number(user.ref_name.split('R_')[1]);
   if (user.usedGenCount == 0) {
     const userInviter = await User.findOne({
@@ -18,7 +19,7 @@ export const giveFriendReward = async (ctx: MyContext, user: IUser) => {
     });
     await userInviter.updateOne({ $inc: { generations: 2 } });
     await userInviter.save();
-    await ctx.api.sendMessage(
+    await api.sendMessage(
       inviterId,
       `<b>Ваш друг сгенерировал фото!</b>\n\n<blockquote>Вы получили <b>+2 генерации</b> на баланс</blockquote>`
     );
