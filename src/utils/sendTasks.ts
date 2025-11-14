@@ -67,6 +67,11 @@ export const sendTasks = async (ctx: MyContext) => {
 
     if (tasks.length !== 0) {
       try {
+        console.log(
+          'BUTTON',
+          tasksKeyboard(tasks, leastUsedProvider).inline_keyboard[0],
+          tasksKeyboard(tasks, leastUsedProvider).inline_keyboard[1]
+        );
         const message = await EditOrSend(ctx, subText, {
           reply_markup: tasksKeyboard(tasks, leastUsedProvider),
         });
@@ -95,79 +100,38 @@ export const sendTasks = async (ctx: MyContext) => {
 export const tasksKeyboard = (tasks: any[], provider: string) => {
   const tasksKeyboard = new InlineKeyboard();
 
-  let globalButtonIndex = 0;
-  const totalButtons = tasks.reduce((sum, task) => {
-    if (provider === 'flyer') {
-      return sum + (Array.isArray(task.links) ? task.links.length : 0);
-    }
-    return sum + 1;
-  }, 0);
-
   for (let i = 0; i < tasks.length; i++) {
-    const task = tasks[i];
-
-    if (provider === 'subgram' || provider === 'tgrass') {
-      const text =
-        task.type === 'channel'
+    let text;
+    if (provider === 'subgram') {
+      text =
+        tasks[i].type === 'channel'
           ? '📢 Подписаться'
-          : task.type === 'bot'
+          : tasks[i].type === 'bot'
             ? '🤖 Запустить'
             : '🔗 Перейти';
-
-      tasksKeyboard.url(text, task.link);
-
-      if (
-        globalButtonIndex % 2 !== 0 ||
-        globalButtonIndex === totalButtons - 1
-      ) {
-        tasksKeyboard.row();
-      }
-      globalButtonIndex++;
     } else if (provider === 'flyer') {
-      let baseText: string;
-      switch (task.task) {
-        case 'subscribe channel':
-          baseText = '📢 Подписаться';
-          break;
-        case 'start bot':
-          baseText = '🤖 Запустить';
-          break;
-        default:
-          baseText = '🔗 Перейти';
-          break;
-      }
-
-      const links = Array.isArray(task.links) ? task.links : [];
-      if (links.length === 0) {
-        // fallback, если links пустой
-        tasksKeyboard.url(baseText, 'https://t.me');
-        if (
-          globalButtonIndex % 2 !== 0 ||
-          globalButtonIndex === totalButtons - 1
-        ) {
-          tasksKeyboard.row();
-        }
-        globalButtonIndex++;
-        continue;
-      }
-
-      links.forEach((link: string, idx: number) => {
-        const buttonText =
-          links.length > 1 ? `${baseText} ${idx + 1}` : baseText;
-
-        tasksKeyboard.url(buttonText, link);
-
-        if (
-          globalButtonIndex % 2 !== 0 ||
-          globalButtonIndex === totalButtons - 1
-        ) {
-          tasksKeyboard.row();
-        }
-        globalButtonIndex++;
-      });
+      console.log('FLYER_TASKS', tasks);
+      text =
+        tasks[i].task === 'subscribe channel'
+          ? '📢 Подписаться'
+          : tasks[i].task === 'start bot'
+            ? '🤖 Запустить'
+            : '🔗 Перейти';
+    } else if (provider === 'tgrass') {
+      text =
+        tasks[i].type === 'channel'
+          ? '📢 Подписаться'
+          : tasks[i].type === 'bot'
+            ? '🤖 Запустить'
+            : '🔗 Перейти';
     }
+    tasksKeyboard.url(text, tasks[i].link);
+    if (provider === 'flyer' && tasks[i].links[0]) {
+      tasksKeyboard.url(text, tasks[i].links[0]);
+    } else {
+      tasksKeyboard.url(text, tasks[i].link);
+    }
+    i % 2 !== 0 || i === tasks.length - 1 ? tasksKeyboard.row() : null;
   }
-
-  // Кнопка проверки
   return tasksKeyboard.text('✅ Проверить', `check_subs_${provider}`);
 };
