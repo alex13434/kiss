@@ -125,9 +125,7 @@ export const tasksKeyboard = (tasks: any[], provider: string) => {
             ? '🤖 Запустить'
             : '🔗 Перейти';
     }
-    tasksKeyboard.url(text, tasks[i].link);
     if (provider === 'flyer' && tasks[i].links[0]) {
-      console.log('OOO', tasks[i]);
       tasksKeyboard.url(text, tasks[i].links[0]);
     } else {
       tasksKeyboard.url(text, tasks[i].link);
