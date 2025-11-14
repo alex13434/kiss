@@ -27,6 +27,7 @@ export const getFlyerTasks = async (ctx: MyContext) => {
       'https://api.flyerservice.io/get_tasks',
       reqData
     );
+    console.log('DATA', data);
     // Filter out tasks where is_ios_ban is true
     const filteredTasks = data.result.filter(
       (task: any) => task.is_ios_ban === false
