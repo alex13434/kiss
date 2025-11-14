@@ -98,9 +98,6 @@ export const sendTasks = async (ctx: MyContext) => {
 };
 
 export const tasksKeyboard = (tasks: any[], provider: string) => {
-  if (provider == 'flyer') {
-    console.log('TASKS', tasks);
-  }
   const tasksKeyboard = new InlineKeyboard();
 
   let globalButtonIndex = 0;
