@@ -4,6 +4,7 @@ import { nanoAPI } from '../actions/mediaHandler';
 import { InputFile } from 'grammy';
 import { giveFriendReward } from '../helpers/checkTasks';
 import { User } from '../models/user';
+import { mainText } from '../texts';
 
 export interface KissGenerationTask {
   userId: number;
@@ -76,10 +77,7 @@ async function sendResult(task: any, imageUrl: string) {
   const user = await User.findOne({ telegram_id: task.userId });
   if (user) await giveFriendReward({ from: { id: task.userId } } as any, user);
 
-  await bot.api.sendMessage(
-    task.chatId,
-    'Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются'
-  );
+  await bot.api.sendMessage(task.chatId, mainText);
 }
 
 async function sendError(task: any, message: string) {

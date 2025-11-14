@@ -1,6 +1,6 @@
 import { InputFile } from 'grammy';
 import { redis } from '../bot';
-import { groupStartText } from '../texts';
+import { groupStartText, mainText } from '../texts';
 import { MyContext } from '../typings/context';
 import { InputMediaBuilder } from 'grammy';
 
@@ -18,10 +18,7 @@ export const startHandler = async (ctx: MyContext) => {
     await ctx.api.sendMediaGroup(ctx.chat.id, media);
     await redis.set(String(ctx.chat.id), '1');
   }
-  await ctx.api.sendMessage(
-    ctx.chat.id,
-    '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋'
-  );
+  await ctx.api.sendMessage(ctx.chat.id, mainText);
 };
 
 export const groupStartHandler = async (ctx: MyContext) => {

@@ -25,9 +25,7 @@ export const mediaHandler = async (ctx: MyContext) => {
 
   // Только альбомы (2 фото в одном сообщении)
   if (!mediaGroupId) {
-    await ctx.reply(
-      '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋'
-    );
+    await ctx.reply(mainText);
     return;
   }
 
@@ -78,6 +76,7 @@ function cleanupAlbum(user_id: string) {
 // actions/mediaHandler.ts
 
 import { redis } from '../bot';
+import { mainText } from '../texts';
 
 export async function processKissAlbum(ctx: MyContext) {
   const userId = ctx.from.id;
@@ -89,9 +88,14 @@ export async function processKissAlbum(ctx: MyContext) {
 
   const user = await User.findOne({ telegram_id: userId });
   if (user.generations < 1) {
-    return ctx.reply(`На балансе ${user.generations} генераций...`, {
-      reply_markup: donate_kb(userId),
-    });
+    return ctx.reply(
+      `На вашем балансе 0 генераций. Пополните баланс, чтобы продолжить.
+
+💡 Получайте <b>+2 генерации за каждого приглашенного друга</b>, который создаст фото.`,
+      {
+        reply_markup: donate_kb(userId),
+      }
+    );
   }
 
   await User.updateOne(
@@ -158,6 +162,7 @@ export const successfulPaymentHandler = async (ctx: MyContext) => {
 
 У вас сейчас <b>${generations + items[genIndex][0]} ${getGenEnding(generations + items[genIndex][0])}</b> на балансе!`
   );
+  await processKissAlbum(ctx);
 };
 
 export const buyGensCQ = async (ctx: MyContext) => {
