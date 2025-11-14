@@ -36,7 +36,6 @@ import {
   gameCQ,
   preCheckoutQueryHandler,
   successfulPaymentHandler,
-  resumeGame,
 } from './actions/game';
 import { checkButtonCQ } from './utils/taskManager';
 import { startHandler } from './actions/startHandler';
@@ -50,7 +49,7 @@ import {
   viewResourceConv,
 } from './admin/resources';
 import { testFunc } from './actions/testFunc';
-import { gCommands, GROUPCOMMAND, main_kb, pCommands } from './common';
+import { GROUPCOMMAND, main_kb, pCommands } from './common';
 import { refUser } from './middlewares/refUser';
 import { groupStartText, mainText } from './texts';
 import { IUser, User } from './models/user';
@@ -82,32 +81,6 @@ redis.on('error', err => {
 
 export const bot = new Bot<MyContext>(config.BOT_TOKEN);
 
-async function resumeActiveGames() {
-  try {
-    const keys = await redis.keys('gameState:*');
-
-    for (const key of keys) {
-      const userId = parseInt(key.split(':')[1]);
-      const savedState = await redis.get(key);
-      if (!savedState) continue;
-
-      const gameState = JSON.parse(savedState);
-
-      // Создаём контекст для пользователя
-      const ctx: MyContext = {
-        from: { id: userId, is_bot: false } as any,
-        chat: { id: gameState.chatId, type: 'private' } as any,
-        api: bot.api,
-      } as MyContext;
-
-      // Возобновляем игру
-      await resumeGame(ctx, gameState);
-    }
-  } catch (error) {
-    console.error('Ошибка при возобновлении активных игр:', error);
-  }
-}
-
 function initial(): SessionData {
   return {};
 }
@@ -117,7 +90,6 @@ function getSessionKey(ctx: Context) {
 }
 
 bot.api.setMyCommands(pCommands, { scope: { type: 'all_private_chats' } });
-bot.api.setMyCommands(gCommands, { scope: { type: 'all_group_chats' } });
 
 bot.api.config.use(parseMode('HTML'));
 bot.use(sequentialize(ctx => String(ctx.chat?.id)));
@@ -210,7 +182,6 @@ gBot.on('message', ctx => {
 
 async function startBot() {
   try {
-    await resumeActiveGames(); // Возобновляем активные игры
     await initializeMailing();
     run(bot);
     cleanActiveTasks(bot.api);

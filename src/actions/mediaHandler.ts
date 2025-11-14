@@ -1,8 +1,11 @@
 import { MyContext } from '../typings/context';
 import { InputFile } from 'grammy';
 import { NanoBananaAPI } from '../utils/NanoBananaAPI';
+import { User } from '../models/user';
+import { checkTasks } from '../helpers/checkTasks';
+import { donate_kb } from '../common';
 
-const albumStorage = new Map<
+export const albumStorage = new Map<
   string,
   { photos: any[]; timeout: NodeJS.Timeout }
 >();
@@ -22,7 +25,7 @@ export const mediaHandler = async (ctx: MyContext) => {
   // Только альбомы (2 фото в одном сообщении)
   if (!mediaGroupId) {
     await ctx.reply(
-      'Пожалуйста, отправьте **2 фото в одном сообщении** (альбомом), чтобы я сделал поцелуй.'
+      'Пожалуйста, отправьте <b>2 фото в одном сообщении</b>, чтобы я сделал поцелуй 💋'
     );
     return;
   }
@@ -34,10 +37,6 @@ export const mediaHandler = async (ctx: MyContext) => {
     const timeout = setTimeout(() => cleanupAlbum(mediaGroupId), ALBUM_TIMEOUT);
     entry = { photos: [], timeout };
     albumStorage.set(mediaGroupId, entry);
-
-    await ctx.reply(
-      'Получил первое фото... Жду второе! Отправьте **оба фото вместе**.'
-    );
   } else {
     // Сброс таймаута
     clearTimeout(entry.timeout);
@@ -53,7 +52,29 @@ export const mediaHandler = async (ctx: MyContext) => {
   // Если пришло ровно 2 фото — запускаем обработку
   if (entry.photos.length === REQUIRED_PHOTOS) {
     clearTimeout(entry.timeout);
-    await processKissAlbum(mediaGroupId, ctx);
+    const { usedGenCount, generations } = await User.findOne({
+      telegram_id: ctx.from.id,
+    });
+    const result = await checkTasks(ctx);
+    if (result == 'completed' || result == 'no_tasks') {
+      if (generations >= 1) {
+        processKissAlbum(mediaGroupId, ctx).then(async () => {
+          await User.updateOne(
+            { telegram_id: ctx.from.id },
+            { $inc: { usedGenCount: 1 } },
+            { $inc: { generations: -1 } }
+          );
+        });
+      } else {
+        await ctx.api.sendMessage(
+          ctx.chat.id,
+          `На вашем балансе ${generations} генераций. Пополните баланс, чтобы продолжить.
+  
+  💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.`,
+          { reply_markup: donate_kb(ctx.from.id) }
+        );
+      }
+    }
   }
 
   // Если больше 2 — обрезаем
@@ -81,7 +102,7 @@ async function processKissAlbum(mediaGroupId: string, ctx: MyContext) {
   cleanupAlbum(mediaGroupId);
 
   const statusMsg = await ctx.reply(
-    '💋 <b>Готовлю поцелуй...</b> Это займёт ~30–60 секунд',
+    '💋 <b>Делаю поцелуй...</b> Это займёт ~30–60 секунд',
     {
       reply_to_message_id: photos[0].message_id,
     }
@@ -97,7 +118,7 @@ async function processKissAlbum(mediaGroupId: string, ctx: MyContext) {
 
     // 2. Отправляем в NanoBanana API
     const taskId = await nanoAPI.generateImage('make these people kiss', {
-      type: 'TEXTTOIAMGE', // или 'MERGE', 'KISS' — проверь документацию
+      type: 'TEXTTOIAMGE',
       numImages: 1,
       imageUrls: [photoUrl1, photoUrl2],
       watermark: false,

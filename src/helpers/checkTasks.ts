@@ -12,25 +12,18 @@ import { sendTasks } from '../utils/sendTasks';
 
 export const checkTasks = async (ctx: MyContext) => {
   const result = await sendTasks(ctx);
-  if (result === 'incompleted') {
-    return result;
-  } else if (result === 'no_tasks') {
-    // нету задач, предлагаем донат
-    return result;
-  } else {
-    // выполнены
-  }
+  return result;
 };
 
-export const giveFriendReward = async (ctx: MyContext, user: IUser) => {
-  if (user.totalGamesCount == GAMESREWARD) {
-    if (user.ref_name.startsWith('R_')) {
-      const inviter_id = user.ref_name.split('R_')[1];
-      await User.updateOne(
-        { telegram_id: inviter_id },
-        { $inc: { balance: FRIENDREWARD } }
-      );
-      await ctx.api.sendMessage(inviter_id, rewardForFriendText);
-    }
-  }
-};
+// export const giveFriendReward = async (ctx: MyContext, user: IUser) => {
+//   if (user.totalGamesCount == GAMESREWARD) {
+//     if (user.ref_name.startsWith('R_')) {
+//       const inviter_id = user.ref_name.split('R_')[1];
+//       await User.updateOne(
+//         { telegram_id: inviter_id },
+//         { $inc: { balance: FRIENDREWARD } }
+//       );
+//       await ctx.api.sendMessage(inviter_id, rewardForFriendText);
+//     }
+//   }
+// };

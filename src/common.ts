@@ -13,22 +13,44 @@ export const WINVALUES = [4, 5];
 export const DICE = '🏀';
 export const GROUPCOMMAND = 'basket';
 
-export const pCommands = [
-  { command: '/start', description: '🏀 сыграть в баскет' },
-  { command: '/bonus', description: '🌟 бонус за друга' },
-];
-
-export const gCommands = [
-  { command: '/basket', description: '🏀 сыграть в баскет' },
-];
-
 export const items: Record<number, number[]> = {
-  0: [0, 6],
-  1: [1, 5],
-  2: [5, 2],
-  3: [10, 1],
-  4: [15, 1],
+  0: [1, 5],
+  1: [10, 40],
+  2: [50, 150],
+  3: [500, 1000],
 };
+
+export const getGenEnding = (days: number) => {
+  if (days % 10 === 1 && days % 100 !== 11) {
+    return 'генерация';
+  } else if (
+    [2, 3, 4].includes(days % 10) &&
+    ![12, 13, 14].includes(days % 100)
+  ) {
+    return 'генерации';
+  } else {
+    return 'генераций';
+  }
+};
+
+export const donate_kb = (user_id: number) => {
+  const keyboard = new InlineKeyboard();
+
+  Object.entries(items).forEach(([key, [cost, gens]], index) => {
+    const text = `🔥 ${gens} ${getGenEnding(gens)} - ${cost} ⭐️`;
+
+    keyboard.text(text, `buy_gens_${key}`).row();
+  });
+
+  keyboard.copyText(
+    `📨 Пригласить друга`,
+    `https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
+  );
+
+  return keyboard;
+};
+
+export const pCommands = [{ command: '/start', description: '😘 Целоваться' }];
 
 export const getDiceEnding = (days: number) => {
   if (days % 10 === 1 && days % 100 !== 11) {

@@ -105,10 +105,6 @@ export const checkButtonCQ = async (ctx: MyContext) => {
     try {
       await ctx.deleteMessage();
     } catch (error) {}
-    await redis.del(`activeTasks:${ctx.from.id}:${provider}`);
-    const key = `freeGameCooldown:${ctx.from.id}`;
-    await redis.setex(key, FREEGAMECOOLDOWN, '1');
-    startGame(ctx, 0, true);
   }
 };
 

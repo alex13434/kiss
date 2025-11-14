@@ -45,7 +45,8 @@ const userSchema = new Schema(
         ref: 'Group',
       },
     ],
-    genCount: { type: Number, default: 0 },
+    generations: { type: Number, default: 1 },
+    usedGenCount: { type: Number, default: 0 },
     usedProviders: {
       type: Map,
       of: Number,
