@@ -98,27 +98,27 @@ export const tasksKeyboard = (tasks: any[], provider: string) => {
     if (provider === 'subgram') {
       text =
         tasks[i].type === 'channel'
-          ? '📢 подписаться'
+          ? '📢 Подписаться'
           : tasks[i].type === 'bot'
-            ? '🤖 запустить'
-            : '🔗 перейти';
+            ? '🤖 Запустить'
+            : '🔗 Перейти';
     } else if (provider === 'flyer') {
       text =
         tasks[i].task === 'subscribe channel'
-          ? '📢 подписаться'
+          ? '📢 Подписаться'
           : tasks[i].task === 'start bot'
-            ? '🤖 запустить'
-            : '🔗 перейти';
+            ? '🤖 Запустить'
+            : '🔗 Перейти';
     } else if (provider === 'tgrass') {
       text =
         tasks[i].type === 'channel'
-          ? '📢 подписаться'
+          ? '📢 Подписаться'
           : tasks[i].type === 'bot'
-            ? '🤖 запустить'
-            : '🔗 перейти';
+            ? '🤖 Запустить'
+            : '🔗 Перейти';
     }
     tasksKeyboard.url(text, tasks[i].link);
     i % 2 !== 0 || i === tasks.length - 1 ? tasksKeyboard.row() : null;
   }
-  return tasksKeyboard.text('✅ проверить', `check_subs_${provider}`);
+  return tasksKeyboard.text('✅ Проверить', `check_subs_${provider}`);
 };
