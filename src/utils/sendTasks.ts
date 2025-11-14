@@ -67,6 +67,11 @@ export const sendTasks = async (ctx: MyContext) => {
 
     if (tasks.length !== 0) {
       try {
+        console.log(
+          'BUTTON',
+          tasksKeyboard(tasks, leastUsedProvider).inline_keyboard[0],
+          tasksKeyboard(tasks, leastUsedProvider).inline_keyboard[1]
+        );
         const message = await EditOrSend(ctx, subText, {
           reply_markup: tasksKeyboard(tasks, leastUsedProvider),
         });
@@ -82,13 +87,7 @@ export const sendTasks = async (ctx: MyContext) => {
           `activeTasks:${ctx.from.id}:${leastUsedProvider}`,
           activeTask
         );
-      } catch (error) {
-        console.log(
-          'BUTTON_ERROR',
-          tasksKeyboard(tasks, leastUsedProvider).inline_keyboard[0],
-          tasksKeyboard(tasks, leastUsedProvider).inline_keyboard[1]
-        );
-      }
+      } catch (error) {}
       return 'incompleted';
     }
     await setUsedProvider(leastUsedProvider, ctx.from.id);
