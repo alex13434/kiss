@@ -83,7 +83,7 @@ export const sendTasks = async (ctx: MyContext) => {
           activeTask
         );
       } catch (error) {
-        console.log(error);
+        console.log('BUTTON_ERROR', tasksKeyboard(tasks, leastUsedProvider));
       }
       return 'incompleted';
     }
