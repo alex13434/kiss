@@ -67,8 +67,7 @@ export const retryGameText = `🟡 <i>в этот раз не вышло,
 export const invoiceText = `получай подарок 🎁 за попадание в кольцо`;
 export const invoicePlusText = `получай крутой подарок 🎁 за попадание в кольцо`;
 
-export const subText = `🟢 <i>выполни все задания и
-получи <b>бесплатную</b> попытку</i>`;
+export const subText = `<b>Для генерации подпишитесь на спонсоров</b>`;
 
 export const retryGameGroupText = (win: boolean) => {
   if (win) {
