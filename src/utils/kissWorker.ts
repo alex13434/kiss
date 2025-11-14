@@ -70,14 +70,16 @@ export async function startKissPollingWorker() {
 }
 
 async function sendResult(task: any, imageUrl: string) {
-  await bot.api.sendPhoto(task.chatId, new InputFile({ url: imageUrl }), {
-    reply_to_message_id: task.messageId,
-  });
+  try {
+    await bot.api.sendPhoto(task.chatId, new InputFile({ url: imageUrl }), {
+      reply_to_message_id: task.messageId,
+    });
 
-  const user = await User.findOne({ telegram_id: task.userId });
-  if (user) await giveFriendReward(bot.api, user);
+    const user = await User.findOne({ telegram_id: task.userId });
+    if (user) await giveFriendReward(bot.api, user);
 
-  await bot.api.sendMessage(task.chatId, mainText);
+    await bot.api.sendMessage(task.chatId, mainText);
+  } catch (error) {}
 }
 
 async function sendError(task: any, message: string) {
