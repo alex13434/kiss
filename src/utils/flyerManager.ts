@@ -56,6 +56,7 @@ export const checkFlyerSubscribes = async (ctx: MyContext) => {
     return {
       signature: task.signature,
       link: task.link,
+      links: task.links,
       task: task.task,
       status: data.result,
     };

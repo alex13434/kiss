@@ -18,7 +18,6 @@ export const checkSubscribes = async (ctx: MyContext, provider: string) => {
     tasks = await getSubGramTasks(ctx);
   } else if (provider === 'flyer') {
     tasks = await getFlyerTasks(ctx);
-    console.log('TASKS', tasks);
   } else if (provider === 'tgrass') {
     tasks = await getTgrassTasks(ctx);
   } else {
