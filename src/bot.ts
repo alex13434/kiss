@@ -112,7 +112,7 @@ pBot.use(refUser);
 
 pBot.callbackQuery(/^buy_gens_/, buyGensCQ);
 pBot.command('start', startHandler);
-pBot.command('bonus', bonusMenu);
+pBot.command('free', bonusMenu);
 pBot.on(':media', mediaHandler);
 pBot.on(':successful_payment', successfulPaymentHandler);
 
