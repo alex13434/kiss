@@ -7,7 +7,7 @@ export const mainText =
 
 export const friendsText = `<b>🖼 Бесплатные генерации</b>\n\n<blockquote>💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.</blockquote>`;
 
-export const subText = `🖼 <b>Для генерации подпишитесь на спонсоров</b>`;
+export const subText = `<b>Для генерации подпишитесь на спонсоров</b>`;
 
 export function groupStartText() {
   return `✋ Привет, я работаю только в личных сообщениях!`;

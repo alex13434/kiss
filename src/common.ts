@@ -1,12 +1,7 @@
 import { InlineKeyboard } from 'grammy';
 import config from './typings/config';
 
-export const FRIENDREWARD = 3;
-export const FREEGAMECOOLDOWN = 15 * 60;
-export const GAMESREWARD = 5;
-export const GAMESTOCD = 4;
 export const ACTIVETASKSTIME = 10 * 60;
-export const CHATGAMECOOLDOWN = 60 * 60 * 24;
 
 // generations : cost
 export const items: Record<number, number[]> = {
