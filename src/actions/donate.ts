@@ -19,7 +19,7 @@ export const successfulPaymentHandler = async (ctx: MyContext) => {
     ctx.chat.id,
     `<b>Успешно 🎉</b>
 
-<b>+${items[genIndex][0]} ${getGenEnding(items[genIndex][0])}</b> 🔥 
+<b>+${items[genIndex][0]} ${getGenEnding(items[genIndex][0])}</b> 🖼 
 
 У вас сейчас <b>${generations + items[genIndex][0]} ${getGenEnding(generations + items[genIndex][0])}</b> на балансе!`
   );
@@ -30,20 +30,20 @@ export const buyGensCQ = async (ctx: MyContext) => {
   const genIndex = Number(ctx.callbackQuery.data.split('buy_gens_')[1]);
   await ctx.api.sendInvoice(
     ctx.chat.id,
-    `Покупка генераций`,
-    `+${items[genIndex][0]} ${getGenEnding(items[genIndex][0])} 🔥 на баланс`,
+    `Покупка генераций 🖼`,
+    `+${items[genIndex][0]} ${getGenEnding(items[genIndex][0])} 🖼 на баланс`,
     `genIndex_${genIndex}`,
     'XTR',
     [
       {
-        label: `${items[genIndex][0]} ${getGenEnding(items[genIndex][0])} 🔥`,
+        label: `${items[genIndex][0]} ${getGenEnding(items[genIndex][0])} 🖼`,
         amount: items[genIndex][1],
       },
     ],
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: `Купить за ⭐ ${items[genIndex][1]}`, pay: true }],
+          [{ text: `Заплатить ⭐ ${items[genIndex][1]}`, pay: true }],
         ],
       },
     }

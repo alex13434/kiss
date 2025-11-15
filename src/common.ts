@@ -48,7 +48,7 @@ export const donate_kb = (user_id: number) => {
 
 export const pCommands = [
   { command: '/start', description: '😘 Создать поцелуй' },
-  { command: '/bonus', description: '🔥 Генерации за друзей' },
+  { command: '/bonus', description: '🖼 Генерации за друзей' },
 ];
 
 export const invite_menu_kb = (user_id: number) =>

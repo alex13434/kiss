@@ -5,7 +5,7 @@ export function formatNumber(num: number) {
 export const mainText =
   '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋';
 
-export const friendsText = `<b>🔥 Бесплатные генерации</b>\n\n<blockquote>💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.</blockquote>`;
+export const friendsText = `<b>🖼 Бесплатные генерации</b>\n\n<blockquote>💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.</blockquote>`;
 
 export const subText = `🖼 <b>Для генерации подпишитесь на спонсоров</b>`;
 
