@@ -54,7 +54,7 @@ export const invite_menu_kb = (user_id: number) =>
     )
     .row()
     .copyText(
-      '🔗 Скопировать ссылку',
+      '🔗 Ссылка для друга',
       `https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
     );
 
