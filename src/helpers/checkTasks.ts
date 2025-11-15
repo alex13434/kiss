@@ -1,8 +1,5 @@
 import { Api } from 'grammy';
-import { redis } from '../bot';
-import { FREEGAMECOOLDOWN, FRIENDREWARD, GAMESREWARD } from '../common';
 import { IUser, User } from '../models/user';
-import { mainText, rewardForFriendText } from '../texts';
 import { MyContext } from '../typings/context';
 import { sendTasks } from '../utils/sendTasks';
 

@@ -33,7 +33,6 @@ import { refGroup } from './middlewares/refGroup';
 import { bonusMenu } from './actions/bonus';
 import { checkButtonCQ } from './utils/taskManager';
 import { startHandler } from './actions/startHandler';
-import { addToChat } from './actions/addToChat';
 import { cleanActiveTasks } from './helpers/cleanActiveTasks';
 import {
   addResourceConv,
@@ -48,13 +47,13 @@ import { groupStartText, mainText } from './texts';
 import { IUser, User } from './models/user';
 import { logError } from './utils/logger';
 import { checkRef } from './admin/checkRef';
+import { mediaHandler } from './actions/mediaHandler';
+import { startKissPollingWorker } from './utils/kissWorker';
 import {
   buyGensCQ,
-  mediaHandler,
   preCheckoutQueryHandler,
   successfulPaymentHandler,
-} from './actions/mediaHandler';
-import { startKissPollingWorker } from './utils/kissWorker';
+} from './actions/donate';
 
 export const ADMIN_ID = 7371046616;
 

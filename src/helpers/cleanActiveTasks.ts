@@ -1,7 +1,6 @@
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
 import { redis } from '../bot';
 import { IActiveTask } from '../utils/sendTasks';
-import { ACTIVETASKSTIME } from '../common';
 import { Api } from 'grammy';
 
 const scheduler = new ToadScheduler();

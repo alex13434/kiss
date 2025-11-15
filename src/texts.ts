@@ -1,122 +1,19 @@
-import { DICE, FRIENDREWARD, GAMESREWARD, items, WINVALUES } from './common';
-import { IUser } from './models/user';
-import config from './typings/config';
-
 export function formatNumber(num: number) {
   return num.toLocaleString('en-US');
 }
-export const rulesText = `<i>получай</i> <b>телеграм-подарки</b>
-<i>за каждую победу!</i> 🏆
-
-🏀 <b>обычный бросок</b>
-<i>подарок за</i> <b>15</b> ⭐️ — 🧸💝
-
-💎🏀 <b>премиум-бросок</b>
-<i>подарок за</i> <b>25</b> ⭐️ — 🎁🌹`;
-
-const getHoursEnding = (hours: number) => {
-  const intHours = Math.floor(hours);
-  if (intHours % 10 === 1 && intHours % 100 !== 11) {
-    return 'час';
-  } else if (
-    [2, 3, 4].includes(intHours % 10) &&
-    ![12, 13, 14].includes(intHours % 100)
-  ) {
-    return 'часа';
-  } else {
-    return 'часов';
-  }
-};
-
-const getMinutesEnding = (hours: number) => {
-  const intHours = Math.floor(hours);
-  if (intHours % 10 === 1 && intHours % 100 !== 11) {
-    return 'минута';
-  } else if (
-    [2, 3, 4].includes(intHours % 10) &&
-    ![12, 13, 14].includes(intHours % 100)
-  ) {
-    return 'минуты';
-  } else {
-    return 'минут';
-  }
-};
-
-const getSecondsEnding = (hours: number) => {
-  const intHours = Math.floor(hours);
-  if (intHours % 10 === 1 && intHours % 100 !== 11) {
-    return 'секунда';
-  } else if (
-    [2, 3, 4].includes(intHours % 10) &&
-    ![12, 13, 14].includes(intHours % 100)
-  ) {
-    return 'секунды';
-  } else {
-    return 'секунд';
-  }
-};
 
 export const mainText =
   '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋';
 
 export const friendsText = `<b>🔥 Бесплатные генерации</b>\n\n<blockquote>💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.</blockquote>`;
 
-export const retryGameText = `🟡 <i>в этот раз не вышло,
-сыграем еще раз?</i>`;
-
-export const invoiceText = `получай подарок 🎁 за попадание в кольцо`;
-export const invoicePlusText = `получай крутой подарок 🎁 за попадание в кольцо`;
-
-export const subText = `<b>Для генерации подпишитесь на спонсоров</b>`;
-
-export const retryGameGroupText = (win: boolean) => {
-  if (win) {
-    return `✅ <b>попал в кольцо!</b>`;
-  } else {
-    return `🟡 <i>в этот раз не вышло =(</i>`;
-  }
-};
-
-export const groupTimeLeftText = (ttl: number) => {
-  const hours = Math.floor(ttl / (60 * 60));
-  const minutes = Math.floor((ttl % (60 * 60)) / 60);
-  const seconds = ttl % 60;
-
-  const hoursText = hours > 0 ? `${hours} ${getHoursEnding(hours)}` : '';
-  const minutesText =
-    minutes > 0 ? `${minutes} ${getMinutesEnding(minutes)}` : '';
-  const secondsText =
-    seconds > 0 ? `${seconds} ${getSecondsEnding(seconds)}` : '';
-
-  const timeParts = [hoursText, minutesText, secondsText].filter(
-    part => part !== ''
-  );
-  const timeString =
-    timeParts.length > 0 ? timeParts.join(' ') : 'меньше секунды';
-
-  return `🏀 <i>до следующего броска осталось
-<blockquote><b>${timeString}</b></blockquote></i>`;
-};
-
-const winResultText = '<i><b>✅ попал!</b></i>';
-const loseResultText = '<i><b>❌ промах</b></i>';
-
-export const resultPlayText = (i: number, value: number) =>
-  `${WINVALUES.includes(value) ? winResultText : loseResultText}\n`;
-
-export const rewardForFriendText = `<blockquote>🎉 вы получили <b>вознаграждение ⭐️ ${FRIENDREWARD}</b> за приглашение друга!</blockquote>`;
-
-export const addToChatText = `<blockquote>👥 <b>скорее добавляй меня в чат,
-будем бросать мяч вместе!</b></blockquote>`;
-
-export const inviteFriendText = (
-  user: IUser
-) => `<blockquote>🔗 по вашей ссылке перешёл <b><a href="https://t.me/${user.username}">${user.first_name}</a></b>,
-после того как он сыграет ${GAMESREWARD} раз в баскет вы получите <b>⭐️ ${FRIENDREWARD}</b> на баланс</blockquote>`;
+export const subText = `🖼 <b>Для генерации подпишитесь на спонсоров</b>`;
 
 export function groupStartText() {
   return `✋ Привет, я работаю только в личных сообщениях!`;
 }
+
+export const zeroGensText = `💰 На вашем балансе <b>0 генераций</b>, пополните баланс, чтобы продолжить\n\n<blockquote>💡 Получайте <b>+2 генерации за каждого приглашенного друга</b>, который создаст фото</blockquote>`;
 
 // admin
 export const languageToFlag: { [key: string]: string } = {

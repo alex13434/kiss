@@ -8,17 +8,12 @@ export const GAMESTOCD = 4;
 export const ACTIVETASKSTIME = 10 * 60;
 export const CHATGAMECOOLDOWN = 60 * 60 * 24;
 
-export const PREMINDEX = 4;
-export const WINVALUES = [4, 5];
-export const DICE = '🏀';
-export const GROUPCOMMAND = 'basket';
-
 // generations : cost
 export const items: Record<number, number[]> = {
   0: [1, 5],
   1: [10, 40],
   2: [50, 150],
-  3: [500, 1000],
+  3: [200, 500],
 };
 
 export const getGenEnding = (days: number) => {
@@ -37,14 +32,14 @@ export const getGenEnding = (days: number) => {
 export const donate_kb = (user_id: number) => {
   const keyboard = new InlineKeyboard();
 
-  Object.entries(items).forEach(([key, [gens, cost]], index) => {
-    const text = `🔥 ${gens} ${getGenEnding(gens)} - ${cost} ⭐️`;
+  Object.entries(items).forEach(([key, [gens, cost]]) => {
+    const text = `${key == '0' ? '🪄' : key == '1' ? '🦋' : key == '2' ? '🎉' : '🔥'} ${gens} ${getGenEnding(gens)} • ${cost} ⭐️`;
 
     keyboard.text(text, `buy_gens_${key}`).row();
   });
 
   keyboard.copyText(
-    `📨 Пригласить друга`,
+    `🔗 Ссылка для друга`,
     `https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
   );
 
@@ -55,11 +50,6 @@ export const pCommands = [
   { command: '/start', description: '😘 Создать поцелуй' },
   { command: '/bonus', description: '🔥 Генерации за друзей' },
 ];
-
-export const acceptRulesKB = new InlineKeyboard().text(
-  'все понятно 👍',
-  'accept_rules'
-);
 
 export const invite_menu_kb = (user_id: number) =>
   new InlineKeyboard()
@@ -72,16 +62,6 @@ export const invite_menu_kb = (user_id: number) =>
       '🔗 Скопировать ссылку',
       `https://t.me/${config.BOT_USERNAME}?start=R_${user_id}`
     );
-
-export const addToChatKeyboard = new InlineKeyboard().url(
-  '⊕ сыграть в чате',
-  `https://t.me/${config.BOT_USERNAME}?startgroup`
-);
-
-export const goToBotKeyboard = new InlineKeyboard().url(
-  '🏀 играть за подарки 🎁',
-  `https://t.me/${config.BOT_USERNAME}?start`
-);
 
 // admin
 export const cancel_add_meme_conv_kb = new InlineKeyboard().text(
