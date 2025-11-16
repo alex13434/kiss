@@ -16,7 +16,7 @@ export interface KissGenerationTask {
   createdAt: number;
 }
 
-const POLL_INTERVAL = 5000; // каждые 5 сек
+const POLL_INTERVAL = 8000;
 
 export async function startKissPollingWorker() {
   console.log('Kiss polling worker started');
