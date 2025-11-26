@@ -162,7 +162,7 @@ pBot.callbackQuery('resume_mailing', resumeMailingCQ);
 
 pBot.on('message', async ctx => {
   const user = await User.findOne({ telegram_id: ctx.from.id });
-  ctx.reply(mainText);
+  ctx.reply(mainText(user.generations));
 });
 
 const gBot = bot.chatType(['supergroup', 'group']);

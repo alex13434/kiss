@@ -78,7 +78,7 @@ async function sendResult(task: any, imageUrl: string) {
     const user = await User.findOne({ telegram_id: task.userId });
     if (user) await giveFriendReward(bot.api, user);
 
-    await bot.api.sendMessage(task.chatId, mainText);
+    await bot.api.sendMessage(task.chatId, mainText(user.generations));
   } catch (error) {}
 }
 

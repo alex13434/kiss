@@ -3,6 +3,7 @@ import { redis } from '../bot';
 import { groupStartText, mainText } from '../texts';
 import { MyContext } from '../typings/context';
 import { InputMediaBuilder } from 'grammy';
+import { User } from '../models/user';
 
 const paths = ['assets/1.JPEG', 'assets/2.JPEG'];
 
@@ -18,7 +19,8 @@ export const startHandler = async (ctx: MyContext) => {
     await ctx.api.sendMediaGroup(ctx.chat.id, media);
     await redis.set(String(ctx.chat.id), '1');
   }
-  await ctx.api.sendMessage(ctx.chat.id, mainText);
+  const { generations } = await User.findOne({ telegram_id: ctx.from.id });
+  await ctx.api.sendMessage(ctx.chat.id, mainText(generations));
 };
 
 export const groupStartHandler = async (ctx: MyContext) => {

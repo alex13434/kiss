@@ -2,8 +2,12 @@ export function formatNumber(num: number) {
   return num.toLocaleString('en-US');
 }
 
-export const mainText =
-  '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋';
+export const mainText = (generations: number) => {
+  if (generations > 0) {
+    return `📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋\n\n<blockquote>🪄 <b>Баланс генераций: ${generations}</b></blockquote>`;
+  }
+  return '📸 Отправь <b>2 фото одним сообщением</b> — я создам изображение, где эти люди целуются 💋';
+};
 
 export const friendsText = `<b>🖼 Бесплатные генерации</b>\n\n<blockquote>💡 Получайте <b>+2 генерации</b> за каждого приглашенного друга, который создаст фото.</blockquote>`;
 
