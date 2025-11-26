@@ -39,7 +39,9 @@ export const mediaHandler = async (ctx: MyContext) => {
   const photo = message.photo![message.photo!.length - 1];
 
   if (!mediaGroupId) {
-    await ctx.reply(mainText);
+    await ctx.reply(
+      '❌ <b>Ошибка</b>\n\n<blockquote><b>Загрузите 2 фото одним сообщением!</b></blockquote>'
+    );
     return;
   }
 
