@@ -3,7 +3,7 @@ import { MyContext } from '../typings/context';
 import { AdRef } from '../models/adRef';
 import { redis } from '../bot';
 
-const COOLDOWN_SECONDS = 10 * 60 * 60;
+const COOLDOWN_SECONDS = 24 * 60 * 60;
 
 export const refUser: Middleware<MyContext> = async (ctx, next) => {
   if (
