@@ -121,7 +121,7 @@ pBot.callbackQuery(/^check_subs_/, checkButtonCQ);
 // pBot.command('test', testFunc);
 
 // admin
-pBot.command('ref', checkRef);
+// pBot.command('ref', checkRef);
 pBot.command('add', async ctx => {
   await ctx.conversation.enter('addResourceConv');
 });
