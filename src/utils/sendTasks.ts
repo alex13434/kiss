@@ -15,9 +15,9 @@ export interface IActiveTask {
 }
 
 const PROVIDER_PRIORITIES = [
-  { name: 'subgram', priority: 2 },
+  { name: 'subgram', priority: 3 },
   { name: 'flyer', priority: 1 },
-  { name: 'tgrass', priority: 3 },
+  { name: 'tgrass', priority: 2 },
 ];
 
 export const sendTasks = async (ctx: MyContext) => {
